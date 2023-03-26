@@ -1,21 +1,44 @@
-// ContentView.swift
-
 import SwiftUI
+import UIKit
 
-struct ContentView: View {
-    var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundColor(.accentColor)
-            Text("Hello, world!")
+class BatteryStatus {
+    var isCharging: Bool? {
+        UIDevice.current.isBatteryMonitoringEnabled = true
+        if UIDevice.current.batteryState == .unknown {
+            return nil
+        } else if UIDevice.current.batteryState == .charging || UIDevice.current.batteryState == .full {
+            return true
+        } else {
+            return false
         }
-        .padding()
+    }
+
+    var value: Float? {
+        UIDevice.current.isBatteryMonitoringEnabled = true
+        if UIDevice.current.batteryState == .unknown {
+            return nil
+        } else {
+            return UIDevice.current.batteryLevel
+        }
     }
 }
 
-struct ContentView_Previews: PreviewProvider {
-    static var previews: some View {
-        ContentView()
+struct ContentView: View {
+    let batteryStatus = BatteryStatus()
+    var body: some View {
+        HStack {
+            if batteryStatus.isCharging == nil {
+                Image(systemName: "questionmark")
+            } else if batteryStatus.isCharging! {
+                Image(systemName: "bolt.fill")
+            }
+            if batteryStatus.value == nil {
+                Image(systemName: "questionmark")
+            } else {
+                Text("\(Int(batteryStatus.value! * 100))")
+                    .bold()
+            }
+        }
+        .padding()
     }
 }
